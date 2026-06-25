@@ -8,17 +8,18 @@ from datetime import datetime
 # 1. Page Configuration
 st.set_page_config(page_title="no-phishes | SOC Terminal", page_icon="⚡", layout="wide")
 
+# Initialize a persistent ledger in the cloud memory to hold logs if it doesn't exist
+if "incident_ledger" not in st.session_state:
+    st.session_state.incident_ledger = []
+
 # 2. Inject Cyberpunk Custom CSS Styling
 st.html("""
 <style>
-    /* Global Background and Main Vibe */
     .stApp {
         background-color: #0d1117 !important;
         color: #c9d1d9 !important;
         font-family: 'Courier New', Courier, monospace !important;
     }
-    
-    /* Header Container Styling */
     .title-container {
         background: linear-gradient(135deg, #1f293d 0%, #0d1117 100%);
         padding: 25px;
@@ -27,16 +28,12 @@ st.html("""
         box-shadow: 0 4px 20px rgba(0, 255, 102, 0.1);
         margin-bottom: 25px;
     }
-    
-    /* Input and Dashboard Card Customization */
     div[data-testid="stVerticalBlock"] > div {
         background-color: #161b22;
         border: 1px solid #30363d;
         border-radius: 8px;
         padding: 20px;
     }
-    
-    /* Force specific box borders to glow green on focus */
     input, select, textarea {
         background-color: #0d1117 !important;
         color: #00ff66 !important;
@@ -47,8 +44,6 @@ st.html("""
         border-color: #00ff66 !important;
         box-shadow: 0 0 10px rgba(0, 255, 102, 0.5) !important;
     }
-    
-    /* Customization for the Primary Buttons */
     div.stButton > button {
         background: linear-gradient(90deg, #00ff66 0%, #00bc45 100%) !important;
         color: #0d1117 !important;
@@ -58,10 +53,6 @@ st.html("""
         width: 100% !important;
         transition: all 0.3s ease !important;
         box-shadow: 0 4px 15px rgba(0, 255, 102, 0.3) !important;
-    }
-    div.stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(0, 255, 102, 0.5) !important;
     }
 </style>
 """)
@@ -90,7 +81,7 @@ with col_input:
                             ["Gmail / Email", "WhatsApp", "SMS", "Instagram", "Discord", "LinkedIn", "Other"])
     
     sender_identity = st.text_input("Attacker Signature (Email / Phone):", placeholder="e.g., alert@security-update-service.com")
-    receiver_identity = st.text_input("Target Core Endpoint (Victim Destination):", placeholder="e.g., student_endpoint@cusp.edu")
+    receiver_identity = st.text_input("Target Core Endpoint (Victim Destination):", placeholder="e.g., target@endpoint.com")
     phishing_url = st.text_input("Payload URL / Suspect Link:", placeholder="https://malicious-login-portal.net")
     
     submit_btn = st.button("🚀 EXECUTE FORENSIC HARVEST")
@@ -106,7 +97,6 @@ with col_output:
         else:
             with st.spinner("Decoding infrastructure payloads..."):
                 
-                # --- Infrastructure Logic ---
                 try:
                     parsed_url = urlparse(phishing_url)
                     domain = parsed_url.netloc if parsed_url.netloc else parsed_url.path
@@ -120,7 +110,6 @@ with col_output:
                     country = "Unknown Zone"
                     isp = "Unknown Core Network"
 
-                # --- Threat Intel Analytics ---
                 url_id = hashlib.sha256(phishing_url.encode()).hexdigest()
                 api_url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
                 headers = {"accept": "application/json", "x-apikey": VT_API_KEY}
@@ -132,12 +121,19 @@ with col_output:
                     stats = vt_response.json()['data']['attributes']['last_analysis_stats']
                     malicious_count = stats.get('malicious', 0)
                 
-                # --- Admin Output Terminal Tracker ---
-                current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                print(f"\n[CRITICAL INCIDENT LOGGED - {current_time}]")
-                print(f"Platform Vector: {platform} | Attacker: {sender_identity} | Victim: {receiver_identity}")
-                print(f"URL: {phishing_url} | Node IP: {ip_address} ({country}) | Threats: {malicious_count}")
-                print("-" * 60)
+                # --- SAVE INCIDENT TO MEMORY LEDGER ---
+                current_time = datetime.now().strftime("%H:%M:%S")
+                incident_data = {
+                    "Time": current_time,
+                    "Platform": platform,
+                    "Sender": sender_identity if sender_identity else "Unknown",
+                    "Receiver": receiver_identity if receiver_identity else "Unknown",
+                    "URL": phishing_url,
+                    "IP": ip_address,
+                    "Country": country,
+                    "Flags": malicious_count
+                }
+                st.session_state.incident_ledger.append(incident_data)
                 
                 # --- Graphical Dashboard Rendering ---
                 st.markdown("<h4 style='color: #8b949e;'>📇 Target Classification Metrics</h4>", unsafe_allow_html=True)
@@ -162,3 +158,18 @@ with col_output:
                     st.markdown("<div style='background-color: rgba(0, 255, 102, 0.1); border: 1px solid #00ff66; padding: 15px; border-radius: 6px; color: #00ff66;'>🔒 **INTEGRITY NOMINAL:** Zero active malware or phishing signatures logged globally. Proceed with standard isolation tracking.</div>", unsafe_allow_html=True)
     else:
         st.markdown("<p style='color: #8b949e; font-style: italic;'>Console waiting for incident inputs. Populate data matrix in the left deck to execute analysis algorithms.</p>", unsafe_allow_html=True)
+
+# --- 6. HIDDEN ADMINISTRATIVE PANEL (At the very bottom) ---
+st.markdown("<br><br><hr style='border-color: #30363d;'/>", unsafe_allow_html=True)
+with st.expander("🔑 Secure Host Dashboard Access"):
+    admin_password = st.text_input("Enter Host Master Key:", type="password")
+    
+    # Change "admin123" to whatever secret passcode you want
+    if admin_password == "141":
+        st.success("ACCESS GRANTED: Fetching local incident telemetry database...")
+        if st.session_state.incident_ledger:
+            st.dataframe(st.session_state.incident_ledger, use_container_width=True)
+        else:
+            st.info("Database is empty. No incidents captured in this session yet.")
+    elif admin_password:
+        st.error("ACCESS DENIED: Invalid Administrative Signature.")
