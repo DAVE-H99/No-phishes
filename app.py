@@ -96,18 +96,16 @@ st.html("""
 # 3. SECURE CREDENTIAL VAULT INTEGRATION
 try:
     VT_API_KEY = st.secrets["VT_API_KEY"]
-    MASTER_KEY = st.secrets["ADMIN_PASSWORD"]
     DB_API_URL = st.secrets["DB_API_URL"]
 except Exception:
     VT_API_KEY = "PASTE_YOUR_LOCAL_KEY_HERE_FOR_TESTING"
-    MASTER_KEY = "admin123"
     DB_API_URL = ""
 
-# 4. SOLID TOP BANNER (Crisp White Bold Titles)
+# 4. SOLID TOP BANNER
 st.html("""
 <div class="title-container">
-    <h1 style="color: #ffffff; margin: 0; font-size: 2.5rem; font-weight: 800; letter-spacing: 1px;">🛡️ PROJECT NO-PHISHES</h1>
-    <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 1.1rem; font-weight: 500;">Phishing Attack Forensic Harvester & Live Infrastructure Database</p>
+    <h1 style="color: #ffffff; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: 1px;">🛡️ PROJECT NO-PHISHES</h1>
+    <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 1.1rem; font-weight: 500;">Phishing Attack Forensic Harvester & Live Threat Infrastructure Analyzer</p>
 </div>
 """)
 
@@ -174,7 +172,6 @@ with col_output:
                 st.markdown("<hr style='border-color: #374151;'/>", unsafe_allow_html=True)
                 st.markdown("<h3 style='color: #ffffff; margin-bottom: 15px;'>🌐 Infrastructure & Origin Routing</h3>", unsafe_allow_html=True)
                 
-                # Render clean structural blocks for technical visibility
                 mc1, mc2, mc3 = st.columns(3)
                 with mc1:
                     st.markdown(f"<div class='metric-wrapper'><p style='margin:0; color:#9ca3af; font-size:0.9rem;'>SERVER IP</p><h4 style='margin:5px 0 0 0; color:#38bdf8;'>{ip_address}</h4></div>", unsafe_allow_html=True)
@@ -189,29 +186,4 @@ with col_output:
                 if malicious_count > 0:
                     st.markdown(f"<div style='background-color: #7f1d1d; border: 2px solid #ef4444; padding: 20px; border-radius: 8px; color: #fca5a5; font-size:1.1rem; font-weight:700;'>🚨 MALICIOUS THREAT DETECTED: This domain layout is confirmed malicious! Flagged by {malicious_count} global security vendor filters. Isolate immediately.</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<div style='background-color: #064e3b; border: 2px solid #10b981; padding: 20px; border-radius: 8px; color: #a7f3d0; font-size:1.1rem; font-weight:700;'>🔒 INTEGRITY CHECK CLEAR: Zero immediate security blacklist flags detected across global databases for this URL record.</div>", unsafe_allow_html=True)
-    else:
-        st.markdown("<div style='background-color: #111827; border: 1px dashed #374151; padding: 30px; border-radius: 8px; text-align: center; color: #9ca3af; font-style: italic;'>Console idle. Input threat incident indicators in the left operational deck to map server infrastructure layout live.</div>", unsafe_allow_html=True)
-
-# 6. ENCRYPTED DATABASE ADMIN ACCESS CONTROL PANEL
-st.markdown("<br><br><hr style='border-color: #374151;'/>", unsafe_allow_html=True)
-with st.expander("🔑 LIVE SYSTEM HOST DATABASE CONSOLE"):
-    st.markdown("<p style='color: #9ca3af;'>Enter the secure host configuration code below to query live persistent data engine matrices:</p>", unsafe_allow_html=True)
-    admin_password = st.text_input("Host Access Authentication Signature:", type="password")
-    
-    if admin_password == MASTER_KEY:
-        st.success("✅ ACCESS GRANTED: Syncing live entries from Google Cloud Sheet Engine...")
-        if DB_API_URL:
-            try:
-                response = requests.get(DB_API_URL).json()
-                if len(response) > 0:
-                    # Render table out using high visibility formatting inside a dataframe module
-                    st.dataframe(response, use_container_width=True)
-                else:
-                    st.info("Database connection active. Log dataset matrix is currently empty.")
-            except Exception as e:
-                st.error(f"Database Read Routine Failure: {e}")
-        else:
-            st.error("Setup Notice: Database infrastructure connection webapp link (DB_API_URL) missing in secrets portal.")
-    elif admin_password:
-        st.error("❌ AUTHENTICATION ERROR: Cryptographic Token signature mismatch.")
+                    st.markdown("<div style='background-color: #064e3b; border: 2px solid #10b981; padding: 20px; border-radius: 8px; color: #a7f3d0; font-size:1.1rem; font-weight:700;'>🔒 INTEGRITY CHECK CLEAR
