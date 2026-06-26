@@ -186,4 +186,6 @@ with col_output:
                 if malicious_count > 0:
                     st.markdown(f"<div style='background-color: #7f1d1d; border: 2px solid #ef4444; padding: 20px; border-radius: 8px; color: #fca5a5; font-size:1.1rem; font-weight:700;'>🚨 MALICIOUS THREAT DETECTED: This domain layout is confirmed malicious! Flagged by {malicious_count} global security vendor filters. Isolate immediately.</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<div style='background-color: #064e3b; border: 2px solid #10b981; padding: 20px; border-radius: 8px; color: #a7f3d0; font-size:1.1rem; font-weight:700;'>🔒 INTEGRITY CHECK CLEAR
+                    st.markdown("<div style='background-color: #064e3b; border: 2px solid #10b981; padding: 20px; border-radius: 8px; color: #a7f3d0; font-size:1.1rem; font-weight:700;'>🔒 INTEGRITY CHECK CLEAR: Zero immediate security blacklist flags detected across global databases for this URL record.</div>", unsafe_allow_html=True)
+    else:
+        st.markdown("<div style='background-color: #111827; border: 1px dashed #374151; padding: 30px; border-radius: 8px; text-align: center; color: #9ca3af; font-style: italic;'>Console idle. Input threat incident indicators in the left operational deck to map server infrastructure layout live.</div>", unsafe_allow_html=True)
