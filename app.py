@@ -3,22 +3,21 @@ import requests
 import hashlib
 import socket
 from urllib.parse import urlparse
-from datetime import datetime
 
-# 1. SYSTEM PAGE SETUP
+# 1. INITIAL SYSTEM FRAMEWORK
 st.set_page_config(page_title="no-phishes | SOC Terminal", page_icon="🛡️", layout="wide")
 
-# 2. HIGH-VISIBILITY PROFESSIONAL TACTICAL STYLING (CUSTOM CSS)
+# 2. HIGH-VISIBILITY PROFESSIONAL CUSTOM INTERFACE STYLING
 st.html("""
 <style>
-    /* Global Page Body and High Contrast Typography */
+    /* Base Global Typography */
     .stApp {
         background-color: #0b0f19 !important;
         color: #f0f4f8 !important;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     }
     
-    /* Massive Bold White Title Container */
+    /* Main Structural Title Banner Block */
     .title-container {
         background: #111827;
         padding: 30px;
@@ -28,7 +27,7 @@ st.html("""
         margin-bottom: 30px;
     }
     
-    /* High Visibility Input Card Boxes (Solid dark slate background) */
+    /* Vertical Workspace Layout Cards */
     div[data-testid="stVerticalBlock"] > div {
         background-color: #111827 !important;
         border: 2px solid #1f2937 !important;
@@ -36,36 +35,35 @@ st.html("""
         padding: 25px !important;
     }
     
-    /* Make Input Text Bright Green and High Contrast */
-    input, select, textarea {
+    /* UI Inputs - Optimized Contrast & Native Pointer Events */
+    input, select, div[data-testid="stSelectbox"] {
         background-color: #030712 !important;
         color: #38bdf8 !important;
-        border: 2px solid #374151 !important;
         font-weight: 600 !important;
         font-size: 1.1rem !important;
     }
     
-    /* Focus highlights */
-    input:focus {
-        border-color: #38bdf8 !important;
+    /* Fix Widget Dropdown Overlay Stack to prevent clicking freeze bugs */
+    div[data-baseweb="select"] {
+        z-index: 9999 !important;
     }
     
-    /* Fix the hard-to-read small labels on top of fields */
+    /* Input Upper Field Category Labels text clarity */
     label p {
-        color: #f3f4f6 !important;
+        color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 1.1rem !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px;
     }
     
-    /* Text font clarity for descriptions and marks */
+    /* Core Content Blocks typography readability profiles */
     span, p, stMarkdown {
         color: #f3f4f6 !important;
         font-size: 1.05rem !important;
     }
 
-    /* Giant High-Contrast Output Cards */
+    /* Output Grid Dynamic Cards */
     .metric-wrapper {
         background-color: #1f2937;
         padding: 15px;
@@ -74,7 +72,7 @@ st.html("""
         text-align: center;
     }
     
-    /* Primary Call to Action Button styling */
+    /* Action Core Button Element Layout styling mechanics */
     div.stButton > button {
         background: #38bdf8 !important;
         color: #030712 !important;
@@ -96,32 +94,35 @@ st.html("""
 # 3. SECURE CREDENTIAL VAULT INTEGRATION
 try:
     VT_API_KEY = st.secrets["VT_API_KEY"]
-    DB_API_URL = st.secrets["DB_API_URL"]
 except Exception:
     VT_API_KEY = "PASTE_YOUR_LOCAL_KEY_HERE_FOR_TESTING"
-    DB_API_URL = ""
 
-# 4. SOLID TOP BANNER
+# 4. MASTER INTERFACE HEADER DISPLAY
 st.html("""
 <div class="title-container">
-    <h1 style="color: #ffffff; margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: 1px;">🛡️ PROJECT NO-PHISHES</h1>
+    <h1 style="color: #ffffff; margin: 0; font-size: 2.5rem; font-weight: 800; letter-spacing: 1px;">🛡️ PROJECT NO-PHISHES</h1>
     <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 1.1rem; font-weight: 500;">Phishing Attack Forensic Harvester & Live Threat Infrastructure Analyzer</p>
 </div>
 """)
 
-# 5. SPLIT COLUMN INTERFACE GRAPHIC GRID
+# 5. SPLIT CONFIGURATION LAYOUT SYSTEM GRID
 col_input, col_space, col_output = st.columns([1.2, 0.1, 1.8])
 
 with col_input:
     st.markdown("<h2 style='color: #38bdf8; margin-top:0; font-weight:800;'>📥 TARGET DATA INPUT</h2>", unsafe_allow_html=True)
     
-    platform = st.selectbox("1. Attack Vector / Platform Used:", ["Gmail / Email", "WhatsApp", "SMS", "Instagram", "Discord", "LinkedIn", "Other"])
-    sender_identity = st.text_input("2. Attacker Identity (Email/Phone/User):", placeholder="e.g., login-security@axis-verify.com")
-    receiver_identity = st.text_input("3. Victim / Target Identity (Email/Phone):", placeholder="e.g., student@cusp.edu")
-    phishing_url = st.text_input("4. Suspicious Malicious URL / Link:", placeholder="https://secure-login-portal.net")
+    platform = st.selectbox(
+        "1. Attack Vector / Platform Used:", 
+        ["Gmail / Email", "WhatsApp", "SMS", "Instagram", "Discord", "LinkedIn", "Other"],
+        key="vector_platform_input"
+    )
+    
+    sender_identity = st.text_input("2. Attacker Identity (Email/Phone/User):", placeholder="e.g., security@verification-portal.com", key="attacker_signature_input")
+    receiver_identity = st.text_input("3. Victim / Target Identity (Email/Phone):", placeholder="e.g., student@cusp.edu", key="victim_endpoint_input")
+    phishing_url = st.text_input("4. Suspicious Malicious URL / Link:", placeholder="https://secure-login-portal.net", key="target_url_payload_input")
     
     st.markdown("<br>", unsafe_allow_html=True)
-    submit_btn = st.button("🚀 RUN FORENSIC THREAT HARVEST")
+    submit_btn = st.button("🚀 RUN FORENSIC THREAT HARVEST", key="trigger_harvest_action_widget")
 
 with col_output:
     st.markdown("<h2 style='color: #38bdf8; margin-top:0; font-weight:800;'>📊 TELEMETRY REPORT OUTPUT</h2>", unsafe_allow_html=True)
@@ -148,20 +149,6 @@ with col_output:
                 malicious_count = 0
                 if vt_response.status_code == 200:
                     malicious_count = vt_response.json()['data']['attributes']['last_analysis_stats'].get('malicious', 0)
-                
-                # --- LIVE REAL-TIME DATABASE TRANSACTION ---
-                current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                if DB_API_URL:
-                    payload = {
-                        "time": current_time, "platform": platform, 
-                        "sender": sender_identity if sender_identity else "Unknown",
-                        "receiver": receiver_identity if receiver_identity else "Unknown",
-                        "url": phishing_url, "ip": ip_address, "country": country, "flags": malicious_count
-                    }
-                    try:
-                        requests.post(DB_API_URL, json=payload)
-                    except Exception:
-                        pass
                 
                 # --- METRIC PRESENTATION DISPLAY ---
                 st.markdown("<h3 style='color: #ffffff; margin-bottom: 5px;'>📇 Target Framework Data</h3>", unsafe_allow_html=True)
