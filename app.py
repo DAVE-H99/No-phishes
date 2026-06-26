@@ -6,189 +6,212 @@ from urllib.parse import urlparse
 from datetime import datetime
 
 # 1. SYSTEM PAGE SETUP
-st.set_page_config(page_title="no-phishes | SOC Terminal", page_icon="⚡", layout="wide")
+st.set_page_config(page_title="no-phishes | SOC Terminal", page_icon="🛡️", layout="wide")
 
-# Initialize a persistent database ledger in cloud memory for the current session
-if "incident_ledger" not in st.session_state:
-    st.session_state.incident_ledger = []
-
-# 2. CYBERPUNK INTERACTION INTERFACE STYLING (CUSTOM CSS)
+# 2. HIGH-VISIBILITY PROFESSIONAL TACTICAL STYLING (CUSTOM CSS)
 st.html("""
 <style>
-    /* Global Page Environment */
+    /* Global Page Body and High Contrast Typography */
     .stApp {
-        background-color: #0d1117 !important;
-        color: #c9d1d9 !important;
-        font-family: 'Courier New', Courier, monospace !important;
+        background-color: #0b0f19 !important;
+        color: #f0f4f8 !important;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     }
     
-    /* Top Header Glowing Layout Banner */
+    /* Massive Bold White Title Container */
     .title-container {
-        background: linear-gradient(135deg, #1f293d 0%, #0d1117 100%);
-        padding: 25px;
+        background: #111827;
+        padding: 30px;
         border-radius: 12px;
-        border-left: 5px solid #00ff66;
-        box-shadow: 0 4px 20px rgba(0, 255, 102, 0.1);
-        margin-bottom: 25px;
+        border: 2px solid #1f2937;
+        border-left: 6px solid #38bdf8;
+        margin-bottom: 30px;
     }
     
-    /* Visual Container Boxes */
+    /* High Visibility Input Card Boxes (Solid dark slate background) */
     div[data-testid="stVerticalBlock"] > div {
-        background-color: #161b22;
-        border: 1px solid #30363d;
-        border-radius: 8px;
-        padding: 20px;
+        background-color: #111827 !important;
+        border: 2px solid #1f2937 !important;
+        border-radius: 10px !important;
+        padding: 25px !important;
     }
     
-    /* Neon Form Inputs */
+    /* Make Input Text Bright Green and High Contrast */
     input, select, textarea {
-        background-color: #0d1117 !important;
-        color: #00ff66 !important;
-        border: 1px solid #30363d !important;
-        font-family: 'Courier New', Courier, monospace !important;
-    }
-    input:focus {
-        border-color: #00ff66 !important;
-        box-shadow: 0 0 10px rgba(0, 255, 102, 0.5) !important;
+        background-color: #030712 !important;
+        color: #38bdf8 !important;
+        border: 2px solid #374151 !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem !important;
     }
     
-    /* Animated Action Button */
+    /* Focus highlights */
+    input:focus {
+        border-color: #38bdf8 !important;
+    }
+    
+    /* Fix the hard-to-read small labels on top of fields */
+    label p {
+        color: #f3f4f6 !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px;
+    }
+    
+    /* Text font clarity for descriptions and marks */
+    span, p, stMarkdown {
+        color: #f3f4f6 !important;
+        font-size: 1.05rem !important;
+    }
+
+    /* Giant High-Contrast Output Cards */
+    .metric-wrapper {
+        background-color: #1f2937;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        text-align: center;
+    }
+    
+    /* Primary Call to Action Button styling */
     div.stButton > button {
-        background: linear-gradient(90deg, #00ff66 0%, #00bc45 100%) !important;
-        color: #0d1117 !important;
-        font-weight: bold !important;
+        background: #38bdf8 !important;
+        color: #030712 !important;
+        font-size: 1.1rem !important;
+        font-weight: 800 !important;
         border: none !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
+        padding: 12px 24px !important;
         width: 100% !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(0, 255, 102, 0.3) !important;
+        box-shadow: 0 4px 14px rgba(56, 189, 248, 0.4) !important;
     }
     div.stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(0, 255, 102, 0.5) !important;
+        background: #0ea5e9 !important;
+        color: #ffffff !important;
     }
 </style>
 """)
 
-# 3. SECURE CREDENTIAL VAULT INTEGRATION (ANTI-LEAK)
+# 3. SECURE CREDENTIAL VAULT INTEGRATION
 try:
     VT_API_KEY = st.secrets["VT_API_KEY"]
+    MASTER_KEY = st.secrets["ADMIN_PASSWORD"]
+    DB_API_URL = st.secrets["DB_API_URL"]
 except Exception:
     VT_API_KEY = "PASTE_YOUR_LOCAL_KEY_HERE_FOR_TESTING"
+    MASTER_KEY = "admin123"
+    DB_API_URL = ""
 
-try:
-    MASTER_KEY = st.secrets["ADMIN_PASSWORD"]
-except Exception:
-    MASTER_KEY = "admin123"  # Local fallback for tracking tests
-
-# 4. TACTICAL TERMINAL BANNER DISPLAY
+# 4. SOLID TOP BANNER (Crisp White Bold Titles)
 st.html("""
 <div class="title-container">
-    <h1 style="color: #00ff66; margin: 0; font-size: 2.2rem;">⚡ PROJECT NO-PHISHES</h1>
-    <p style="color: #8b949e; margin: 5px 0 0 0; font-size: 1rem;">Tactical Phishing Incident Forensics & Threat Infrastructure Tracking Console</p>
+    <h1 style="color: #ffffff; margin: 0; font-size: 2.5rem; font-weight: 800; letter-spacing: 1px;">🛡️ PROJECT NO-PHISHES</h1>
+    <p style="color: #9ca3af; margin: 8px 0 0 0; font-size: 1.1rem; font-weight: 500;">Phishing Attack Forensic Harvester & Live Infrastructure Database</p>
 </div>
 """)
 
-# 5. DASHBOARD GRID SYSTEM LAYOUT
+# 5. SPLIT COLUMN INTERFACE GRAPHIC GRID
 col_input, col_space, col_output = st.columns([1.2, 0.1, 1.8])
 
 with col_input:
-    st.markdown("<h3 style='color: #00ff66; margin-top:0;'>📥 ENGAGE INCIDENT FEED</h3>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #38bdf8; margin-top:0; font-weight:800;'>📥 TARGET DATA INPUT</h2>", unsafe_allow_html=True)
     
-    platform = st.selectbox("Vectors / Delivery Platform:", 
-                            ["Gmail / Email", "WhatsApp", "SMS", "Instagram", "Discord", "LinkedIn", "Other"])
+    platform = st.selectbox("1. Attack Vector / Platform Used:", ["Gmail / Email", "WhatsApp", "SMS", "Instagram", "Discord", "LinkedIn", "Other"])
+    sender_identity = st.text_input("2. Attacker Identity (Email/Phone/User):", placeholder="e.g., login-security@axis-verify.com")
+    receiver_identity = st.text_input("3. Victim / Target Identity (Email/Phone):", placeholder="e.g., student@cusp.edu")
+    phishing_url = st.text_input("4. Suspicious Malicious URL / Link:", placeholder="https://secure-login-portal.net")
     
-    sender_identity = st.text_input("Attacker Signature (Email / Phone):", placeholder="e.g., alert@security-update-service.com")
-    receiver_identity = st.text_input("Target Core Endpoint (Victim Destination):", placeholder="e.g., target@endpoint.com")
-    phishing_url = st.text_input("Payload URL / Suspect Link:", placeholder="https://malicious-login-portal.net")
-    
-    submit_btn = st.button("🚀 EXECUTE FORENSIC HARVEST")
+    st.markdown("<br>", unsafe_allow_html=True)
+    submit_btn = st.button("🚀 RUN FORENSIC THREAT HARVEST")
 
 with col_output:
-    st.markdown("<h3 style='color: #00ff66; margin-top:0;'>📊 TERMINAL TELEMETRY READOUT</h3>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: #38bdf8; margin-top:0; font-weight:800;'>📊 TELEMETRY REPORT OUTPUT</h2>", unsafe_allow_html=True)
     
     if submit_btn:
         if not phishing_url:
-            st.warning("SYSTEM PROMPT: A target Payload URL is mandatory to execute lookup protocols.")
-        elif VT_API_KEY in ["YOUR_API_KEY_HERE", "PASTE_YOUR_LOCAL_KEY_HERE_FOR_TESTING"]:
-            st.error("HARDWARE ERROR: Global Threat Intelligence API access key missing.")
+            st.error("❌ CRITICAL ERROR: You must provide a suspect website link to trigger the analyzer modules.")
         else:
-            with st.spinner("Decoding infrastructure payloads..."):
-                
-                # --- Forensic Infrastructure Tracking ---
+            with st.spinner("Harvesting network infrastructure fingerprints..."):
                 try:
                     parsed_url = urlparse(phishing_url)
                     domain = parsed_url.netloc if parsed_url.netloc else parsed_url.path
                     ip_address = socket.gethostbyname(domain)
-                    
                     geo_resp = requests.get(f"https://ipapi.co/{ip_address}/json/").json()
                     country = geo_resp.get("country_name", "Unknown Zone")
-                    isp = geo_resp.get("org", "Unknown Core Network")
+                    isp = geo_resp.get("org", "Unknown Network Host")
                 except Exception:
-                    ip_address = "Failed Resolution"
-                    country = "Unknown Zone"
-                    isp = "Unknown Core Network"
+                    ip_address, country, isp = "Failed Resolution", "Unknown Zone", "Unknown Network Host"
 
-                # --- VirusTotal Reputation Engine ---
                 url_id = hashlib.sha256(phishing_url.encode()).hexdigest()
                 api_url = f"https://www.virustotal.com/api/v3/urls/{url_id}"
                 headers = {"accept": "application/json", "x-apikey": VT_API_KEY}
-                
                 vt_response = requests.get(api_url, headers=headers)
                 malicious_count = 0
-                
                 if vt_response.status_code == 200:
-                    stats = vt_response.json()['data']['attributes']['last_analysis_stats']
-                    malicious_count = stats.get('malicious', 0)
+                    malicious_count = vt_response.json()['data']['attributes']['last_analysis_stats'].get('malicious', 0)
                 
-                # --- POPULATE SESSION DATABASE ENTRY ---
-                current_time = datetime.now().strftime("%H:%M:%S")
-                incident_data = {
-                    "Time": current_time,
-                    "Platform": platform,
-                    "Sender": sender_identity if sender_identity else "Unknown",
-                    "Receiver": receiver_identity if receiver_identity else "Unknown",
-                    "Target URL": phishing_url,
-                    "Resolved IP": ip_address,
-                    "Hosting Country": country,
-                    "Security Engine Flags": malicious_count
-                }
-                st.session_state.incident_ledger.append(incident_data)
+                # --- LIVE REAL-TIME DATABASE TRANSACTION ---
+                current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                if DB_API_URL:
+                    payload = {
+                        "time": current_time, "platform": platform, 
+                        "sender": sender_identity if sender_identity else "Unknown",
+                        "receiver": receiver_identity if receiver_identity else "Unknown",
+                        "url": phishing_url, "ip": ip_address, "country": country, "flags": malicious_count
+                    }
+                    try:
+                        requests.post(DB_API_URL, json=payload)
+                    except Exception:
+                        pass
                 
-                # --- Interface Metric Cards Generation ---
-                st.markdown("<h4 style='color: #8b949e;'>📇 Target Classification Metrics</h4>", unsafe_allow_html=True)
-                st.write(f"**Attack Vector System:** Intercepted via `{platform}`")
-                st.write(f"**Threat Actor Footprint (Sender):** `{sender_identity if sender_identity else 'Anonymous Origin'}`")
-                st.write(f"**Compromised Endpoint Target (Receiver):** `{receiver_identity if receiver_identity else 'Anonymous Target'}`")
+                # --- METRIC PRESENTATION DISPLAY ---
+                st.markdown("<h3 style='color: #ffffff; margin-bottom: 5px;'>📇 Target Framework Data</h3>", unsafe_allow_html=True)
+                st.markdown(f"🔹 **Platform Delivery Stream:** `{platform}`")
+                st.markdown(f"🔹 **Identified Threat Actor (Sender):** `{sender_identity if sender_identity else 'Anonymous Origin'}`")
+                st.markdown(f"🔹 **Targeted Asset Point (Receiver):** `{receiver_identity if receiver_identity else 'Anonymous Target'}`")
                 
-                st.markdown("<hr style='border-color: #30363d;'/>", unsafe_allow_html=True)
-                st.markdown("<h4 style='color: #8b949e;'>🌐 Host Node Infrastructure Routing</h4>", unsafe_allow_html=True)
+                st.markdown("<hr style='border-color: #374151;'/>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #ffffff; margin-bottom: 15px;'>🌐 Infrastructure & Origin Routing</h3>", unsafe_allow_html=True)
                 
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Server Target IP", ip_address)
-                c2.metric("Geographic Origin", country)
-                c3.metric("Network Architecture (ISP)", isp)
+                # Render clean structural blocks for technical visibility
+                mc1, mc2, mc3 = st.columns(3)
+                with mc1:
+                    st.markdown(f"<div class='metric-wrapper'><p style='margin:0; color:#9ca3af; font-size:0.9rem;'>SERVER IP</p><h4 style='margin:5px 0 0 0; color:#38bdf8;'>{ip_address}</h4></div>", unsafe_allow_html=True)
+                with mc2:
+                    st.markdown(f"<div class='metric-wrapper'><p style='margin:0; color:#9ca3af; font-size:0.9rem;'>HOST COUNTRY</p><h4 style='margin:5px 0 0 0; color:#38bdf8;'>{country}</h4></div>", unsafe_allow_html=True)
+                with mc3:
+                    st.markdown(f"<div class='metric-wrapper'><p style='margin:0; color:#9ca3af; font-size:0.9rem;'>HOST ISP</p><h4 style='margin:5px 0 0 0; color:#38bdf8;'>{isp}</h4></div>", unsafe_allow_html=True)
                 
-                st.markdown("<hr style='border-color: #30363d;'/>", unsafe_allow_html=True)
-                st.markdown("<h4 style='color: #8b949e;'>☣️ Global Threat Assessment Core</h4>", unsafe_allow_html=True)
+                st.markdown("<hr style='border-color: #374151;'/>", unsafe_allow_html=True)
+                st.markdown("<h3 style='color: #ffffff; margin-bottom: 15px;'>☣️ Global Threat Assessment Core</h3>", unsafe_allow_html=True)
                 
                 if malicious_count > 0:
-                    st.markdown(f"<div style='background-color: rgba(255, 75, 75, 0.1); border: 1px solid #ff4b4b; padding: 15px; border-radius: 6px; color: #ff4b4b;'>🚨 **MALICIOUS INTENT CONFIRMED:** Blacklisted by {malicious_count} verified defense engines. Drop connections immediately.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background-color: #7f1d1d; border: 2px solid #ef4444; padding: 20px; border-radius: 8px; color: #fca5a5; font-size:1.1rem; font-weight:700;'>🚨 MALICIOUS THREAT DETECTED: This domain layout is confirmed malicious! Flagged by {malicious_count} global security vendor filters. Isolate immediately.</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<div style='background-color: rgba(0, 255, 102, 0.1); border: 1px solid #00ff66; padding: 15px; border-radius: 6px; color: #00ff66;'>🔒 **INTEGRITY NOMINAL:** Zero active malware or phishing signatures logged globally. Proceed with standard isolation tracking.</div>", unsafe_allow_html=True)
+                    st.markdown("<div style='background-color: #064e3b; border: 2px solid #10b981; padding: 20px; border-radius: 8px; color: #a7f3d0; font-size:1.1rem; font-weight:700;'>🔒 INTEGRITY CHECK CLEAR: Zero immediate security blacklist flags detected across global databases for this URL record.</div>", unsafe_allow_html=True)
     else:
-        st.markdown("<p style='color: #8b949e; font-style: italic;'>Console waiting for incident inputs. Populate data matrix in the left deck to execute analysis algorithms.</p>", unsafe_allow_html=True)
+        st.markdown("<div style='background-color: #111827; border: 1px dashed #374151; padding: 30px; border-radius: 8px; text-align: center; color: #9ca3af; font-style: italic;'>Console idle. Input threat incident indicators in the left operational deck to map server infrastructure layout live.</div>", unsafe_allow_html=True)
 
-# 6. ENCRYPTED INTEGRATED ADMINISTRATIVE SYSTEM CONTROL PANEL
-st.markdown("<br><br><hr style='border-color: #30363d;'/>", unsafe_allow_html=True)
-with st.expander("🔑 Secure Host Dashboard Access"):
-    admin_password = st.text_input("Enter Host Master Key:", type="password")
+# 6. ENCRYPTED DATABASE ADMIN ACCESS CONTROL PANEL
+st.markdown("<br><br><hr style='border-color: #374151;'/>", unsafe_allow_html=True)
+with st.expander("🔑 LIVE SYSTEM HOST DATABASE CONSOLE"):
+    st.markdown("<p style='color: #9ca3af;'>Enter the secure host configuration code below to query live persistent data engine matrices:</p>", unsafe_allow_html=True)
+    admin_password = st.text_input("Host Access Authentication Signature:", type="password")
     
     if admin_password == MASTER_KEY:
-        st.success("ACCESS GRANTED: Fetching local incident telemetry database records...")
-        if st.session_state.incident_ledger:
-            st.dataframe(st.session_state.incident_ledger, use_container_width=True)
+        st.success("✅ ACCESS GRANTED: Syncing live entries from Google Cloud Sheet Engine...")
+        if DB_API_URL:
+            try:
+                response = requests.get(DB_API_URL).json()
+                if len(response) > 0:
+                    # Render table out using high visibility formatting inside a dataframe module
+                    st.dataframe(response, use_container_width=True)
+                else:
+                    st.info("Database connection active. Log dataset matrix is currently empty.")
+            except Exception as e:
+                st.error(f"Database Read Routine Failure: {e}")
         else:
-            st.info("Database matrix holds no active records inside this runtime session yet.")
+            st.error("Setup Notice: Database infrastructure connection webapp link (DB_API_URL) missing in secrets portal.")
     elif admin_password:
-        st.error("ACCESS DENIED: Cryptographic Signatures mismatch.")
+        st.error("❌ AUTHENTICATION ERROR: Cryptographic Token signature mismatch.")
